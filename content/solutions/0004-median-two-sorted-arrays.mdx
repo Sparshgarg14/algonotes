@@ -1,0 +1,71 @@
+---
+title: "Median of Two Sorted Arrays"
+platform: "leetcode"
+problemId: 4
+difficulty: "hard"
+tags: ["binary-search", "array", "divide-and-conquer"]
+date: "2025-04-22"
+language: "python"
+timeComplexity: "O(log(min(m,n)))"
+spaceComplexity: "O(1)"
+excerpt: "Binary search on the partition of the shorter array. The key insight is treating this as a partition problem rather than a merge problem."
+published: true
+---
+
+## Problem
+
+Given two sorted arrays `nums1` and `nums2` of size `m` and `n`, return the **median** of the two sorted arrays. Must run in `O(log(m+n))` time.
+
+## Intuition
+
+Instead of merging (O(m+n)), binary search the *partition point* on the shorter array.
+
+<Callout type="tip">
+  Always binary search on the **shorter** array. This keeps complexity at O(log(min(m,n))).
+</Callout>
+
+## Code
+
+```python
+def findMedianSortedArrays(nums1: list[int], nums2: list[int]) -> float:
+    # ensure nums1 is the shorter one
+    if len(nums1) > len(nums2):
+        nums1, nums2 = nums2, nums1
+
+    m, n = len(nums1), len(nums2)
+    lo, hi = 0, m
+
+    while lo <= hi:
+        i = (lo + hi) // 2          # partition nums1
+        j = (m + n + 1) // 2 - i   # partition nums2
+
+        maxLeft1  = float('-inf') if i == 0 else nums1[i - 1]
+        minRight1 = float('inf')  if i == m else nums1[i]
+        maxLeft2  = float('-inf') if j == 0 else nums2[j - 1]
+        minRight2 = float('inf')  if j == n else nums2[j]
+
+        if maxLeft1 <= minRight2 and maxLeft2 <= minRight1:
+            if (m + n) % 2 == 1:
+                return float(max(maxLeft1, maxLeft2))
+            return (max(maxLeft1, maxLeft2) + min(minRight1, minRight2)) / 2
+        elif maxLeft1 > minRight2:
+            hi = i - 1
+        else:
+            lo = i + 1
+```
+
+<Complexity time="O(log(min(m,n)))" space="O(1)" />
+
+## Key Insight
+
+A valid partition means **all elements on the left ≤ all elements on the right**:
+
+- `maxLeft1 ≤ minRight2`
+- `maxLeft2 ≤ minRight1`
+
+Once this holds, we've found the correct split.
+
+## Mistakes to Avoid
+
+- Forgetting to swap arrays when `nums1` is longer
+- Off-by-one in the `j = (m + n + 1) // 2 - i` formula (the `+1` handles odd total length)

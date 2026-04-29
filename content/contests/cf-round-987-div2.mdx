@@ -1,0 +1,43 @@
+---
+title: "Codeforces Round 987 Div.2"
+platform: "codeforces"
+round: "Codeforces Round 987 Div.2"
+rank: 432
+totalRank: 18400
+ratingChange: +47
+date: "2025-04-20"
+tags: ["greedy", "modular-inverse", "math"]
+excerpt: "Went clean on A/B/C but completely choked on D — missed a modular inverse trick I'd seen before."
+published: true
+problems:
+  - { id: "A", title: "Tram", solved: true,  time: "03:12" }
+  - { id: "B", title: "Frog", solved: true,  time: "11:45" }
+  - { id: "C", title: "Jumps", solved: true, time: "28:09" }
+  - { id: "D", title: "Pairs", solved: false }
+  - { id: "E", title: "Tree",  solved: false }
+---
+
+## What Happened
+
+A and B were trivial warmup. C needed a bit of case analysis — took me longer than it should have.
+
+**D was the kill.** I could see it was a math problem with modular arithmetic, but I spent 40 minutes trying a wrong greedy before time ran out. The key was `pow(a, MOD-2, MOD)` for modular inverse — something I'd reviewed literally the week before.
+
+<Callout type="warn">
+  Lesson: When you see division in modular arithmetic, immediately think **modular inverse**, not float division.
+</Callout>
+
+## Problem D — Post-mortem
+
+The crux was computing `C(n, k) mod p`. I kept trying to precompute factorials but forgot the inverse factorial step.
+
+```cpp
+// Correct approach
+long long inv_fact(long long n, long long mod) {
+    return power(fact[n], mod - 2, mod);
+}
+```
+
+## Rating
+
+432 / 18400 · **+47 rating** (finally broke 1700!)

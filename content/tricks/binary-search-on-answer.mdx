@@ -1,0 +1,56 @@
+---
+title: "Binary Search on Answer"
+category: "Binary Search"
+level: "intermediate"
+tags: ["binary-search", "greedy"]
+date: "2025-04-10"
+excerpt: "When to binary search the answer space instead of the array. The check(mid) pattern with five classic examples."
+published: true
+---
+
+## The Core Idea
+
+Instead of searching for an *element*, binary search for the *answer*.
+
+Whenever a problem has this shape:
+
+> "Find the **minimum/maximum value** such that some condition holds"
+
+...you can binary search on the answer space.
+
+<Callout type="info">
+  Recognition signal: the answer space is monotonic — if `x` works, all values ≥ x (or ≤ x) also work.
+</Callout>
+
+## Template
+
+```cpp
+int lo = MIN_POSSIBLE, hi = MAX_POSSIBLE;
+
+while (lo < hi) {
+    int mid = lo + (hi - lo) / 2;
+    if (check(mid)) hi = mid;   // mid works, try smaller
+    else            lo = mid + 1;
+}
+// lo == answer
+```
+
+## Example — Koko Eating Bananas (LC 875)
+
+```python
+def minEatingSpeed(piles, h):
+    def check(speed):
+        return sum((p + speed - 1) // speed for p in piles) <= h
+
+    lo, hi = 1, max(piles)
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if check(mid): hi = mid
+        else:          lo = mid + 1
+    return lo
+```
+
+## When NOT to Use It
+
+- When the answer space is not monotonic
+- When `check(mid)` is expensive and a greedy/DP is cheaper
