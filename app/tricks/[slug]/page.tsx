@@ -4,10 +4,10 @@ import { Tag }         from "@/components/Tag";
 import { notFound }    from "next/navigation";
 import type { Metadata } from "next";
 
-interface Props { params: { slug: string } }
+interface Props { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  try { const { meta } = getTrick(params.slug); return { title: meta.title }; }
+  try { const { meta } = getTrick((await params).slug); return { title: meta.title }; }
   catch { return { title: "Trick" }; }
 }
 
@@ -15,9 +15,10 @@ export function generateStaticParams() {
   return getAllTricks().map((t) => ({ slug: t.slug }));
 }
 
-export default function TrickPage({ params }: Props) {
+export default async function TrickPage({ params }: Props) {
+  const { slug } = await params;
   let data;
-  try { data = getTrick(params.slug); } catch { notFound(); }
+  try { data = getTrick(slug); } catch { notFound(); }
   const { meta, content } = data;
 
   return (
