@@ -1,20 +1,6 @@
-"use client";
-import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
-import { CopyButton } from "./CopyButton";
+import { MDXRemote } from "next-mdx-remote/rsc";
 
 const components = {
-  pre: ({ children }: any) => {
-    const code = children?.props?.children ?? "";
-    return (
-      <div className="relative group my-5">
-        <CopyButton code={code} />
-        <pre className="bg-bg-tertiary rounded-lg p-4 overflow-x-auto text-sm font-mono text-ink-secondary border border-line">
-          <code>{code}</code>
-        </pre>
-      </div>
-    );
-  },
-
   Callout: ({ type = "tip", children }: { type?: "tip" | "warn" | "info"; children: React.ReactNode }) => {
     const styles = {
       tip:  "border-acc-teal/30  bg-acc-teal/5",
@@ -36,9 +22,20 @@ const components = {
       <span>Space: <span className="text-acc-teal">{space}</span></span>
     </div>
   ),
+
+  pre: ({ children }: any) => {
+    const code = children?.props?.children ?? "";
+    return (
+      <div className="relative my-5">
+        <pre className="bg-bg-tertiary rounded-lg p-4 overflow-x-auto text-sm font-mono text-ink-secondary border border-line">
+          <code>{code}</code>
+        </pre>
+      </div>
+    );
+  },
 };
 
-export function MDXContent({ source }: { source: MDXRemoteSerializeResult }) {
+export function MDXContent({ source }: { source: string }) {
   return (
     <div className="prose prose-invert max-w-none
       prose-headings:font-semibold
@@ -49,7 +46,7 @@ export function MDXContent({ source }: { source: MDXRemoteSerializeResult }) {
       prose-code:text-acc-teal
       prose-pre:p-0 prose-pre:bg-transparent prose-pre:border-0
     ">
-      <MDXRemote {...source} components={components} />
+      <MDXRemote source={source} components={components as any} />
     </div>
   );
 }

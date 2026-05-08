@@ -2,7 +2,6 @@ import { getContest, getAllContests } from "@/lib/mdx";
 import { MDXContent }  from "@/components/MDXContent";
 import { Tag }         from "@/components/Tag";
 import { notFound }    from "next/navigation";
-import { serialize }   from "next-mdx-remote/serialize";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -25,7 +24,6 @@ export default async function ContestPage({ params }: Props) {
   let data;
   try { data = getContest(slug); } catch { notFound(); }
   const { meta, content } = data!;
-  const serialized = await serialize(content);
 
   return (
     <article className="px-6 md:px-16 py-12 max-w-3xl">
@@ -63,7 +61,7 @@ export default async function ContestPage({ params }: Props) {
         </div>
       </div>
       <hr className="border-line mb-8" />
-      <MDXContent source={serialized} />
+      <MDXContent source={content} />
     </article>
   );
 }

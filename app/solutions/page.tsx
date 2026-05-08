@@ -1,24 +1,26 @@
 import { getAllSolutions } from "@/lib/mdx";
-import { SolutionCard }    from "@/components/SolutionCard";
-import { TagFilterBar }    from "@/components/TagFilterBar";
-import type { Metadata }   from "next";
+import { SolutionCard }   from "@/components/SolutionCard";
+import { TagFilterBar }   from "@/components/TagFilterBar";
+import type { Metadata }  from "next";
 
 export const metadata: Metadata = { title: "Solutions" };
 
 interface Props {
-  searchParams: { tag?: string; platform?: string; difficulty?: string };
+  searchParams: Promise<{
+    tag?:        string;
+    platform?:   string;
+    difficulty?: string;
+  }>;
 }
 
-export default function SolutionsPage({ searchParams }: Props) {
+export default async function SolutionsPage({ searchParams }: Props) {
+  const { tag, platform, difficulty } = await searchParams;
+
   let solutions = getAllSolutions();
 
-  // filter — extend this as needed (no rearchitecting required)
-  if (searchParams.tag)
-    solutions = solutions.filter((s) => s.tags.includes(searchParams.tag!));
-  if (searchParams.platform)
-    solutions = solutions.filter((s) => s.platform === searchParams.platform);
-  if (searchParams.difficulty)
-    solutions = solutions.filter((s) => s.difficulty === searchParams.difficulty);
+  if (tag)        solutions = solutions.filter((s) => s.tags.includes(tag));
+  if (platform)   solutions = solutions.filter((s) => s.platform === platform);
+  if (difficulty) solutions = solutions.filter((s) => s.difficulty === difficulty);
 
   const allTags = [...new Set(getAllSolutions().flatMap((s) => s.tags))];
 
@@ -33,7 +35,7 @@ export default function SolutionsPage({ searchParams }: Props) {
         tags={allTags}
         platforms={["leetcode", "codeforces", "atcoder"]}
         difficulties={["easy", "medium", "hard"]}
-        active={searchParams}
+        active={{ tag, platform, difficulty }}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
@@ -41,7 +43,9 @@ export default function SolutionsPage({ searchParams }: Props) {
       </div>
 
       {solutions.length === 0 && (
-        <p className="text-ink-muted mt-12 text-center">No solutions found for these filters.</p>
+        <p className="text-ink-muted mt-12 text-center">
+          No solutions found for these filters.
+        </p>
       )}
     </div>
   );

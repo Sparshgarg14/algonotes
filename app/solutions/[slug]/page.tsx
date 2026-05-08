@@ -3,8 +3,8 @@ import { MDXContent }      from "@/components/MDXContent";
 import { Tag }             from "@/components/Tag";
 import { DifficultyBadge } from "@/components/DifficultyBadge";
 import { PlatformBadge }   from "@/components/PlatformBadge";
+import { ViewCount }       from "@/components/ViewCount";
 import { notFound }        from "next/navigation";
-import { serialize }       from "next-mdx-remote/serialize";
 import type { Metadata }   from "next";
 
 export const dynamic = "force-dynamic";
@@ -36,7 +36,6 @@ export default async function SolutionPage({ params }: Props) {
   }
 
   const { meta, content } = data!;
-  const serialized = await serialize(content);
 
   return (
     <article className="px-6 md:px-16 py-12 max-w-3xl">
@@ -53,6 +52,9 @@ export default async function SolutionPage({ params }: Props) {
 
         <h1 className="font-display text-3xl font-semibold mb-3">{meta.title}</h1>
         <p className="text-ink-secondary mb-4">{meta.excerpt}</p>
+        <div className="mb-4">
+          <ViewCount slug={slug} />
+        </div>
 
         <div className="flex flex-wrap gap-4 text-xs font-mono text-ink-muted mb-4">
           <span>⏱ Time: <span className="text-acc-teal">{meta.timeComplexity}</span></span>
@@ -68,7 +70,7 @@ export default async function SolutionPage({ params }: Props) {
 
       <hr className="border-line mb-8" />
 
-      <MDXContent source={serialized} />
+      <MDXContent source={content} />
     </article>
   );
 }
