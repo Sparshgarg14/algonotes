@@ -1,0 +1,88 @@
+---
+title: "2226B — Good Subarrays on a Permutation"
+platform: "codeforces"
+difficulty: "easy"
+tags: ["math", "gcd", "permutation", "greedy"]
+date: "2026-04-28"
+language: "java"
+timeComplexity: "O(n)"
+spaceComplexity: "O(n)"
+excerpt: "The permutation constraint forces every good subarray to have length exactly 2. The whole problem reduces to a single linear scan of adjacent pairs."
+published: true
+---
+
+## Problem
+
+Given a permutation of length `n`, count **good subarrays** where:
+max(subarray) - min(subarray) = gcd(subarray)
+
+## The Reduction
+
+At first glance this looks like an O(n²) or even harder problem. The permutation constraint collapses it completely.
+
+**Step 1 — Use the permutation property**
+
+In a permutation of `n` elements, every value from `1` to `n` appears exactly once. So for any subarray of length `k`:
+- Values are all distinct
+- GCD of any subarray containing `1` is exactly `1`
+- The full array has max = `n`, min = `1`, gcd = `1`
+
+**Step 2 — What length satisfies the condition?**
+
+For the condition `max - min = gcd` on a subarray:
+- Length 1: `max - min = 0`, `gcd = element`. Only works if element = 0, impossible in a permutation.
+- Length 2: `max - min` can equal `gcd`. This is possible — e.g. `[2, 4]`: `4 - 2 = 2 = gcd(2,4)`.
+- Length ≥ 3: Elements are distinct integers. GCD reduces to 1 almost always, but `max - min ≥ 2`. So `max - min = gcd` requires `max - min = 1`, but three distinct integers always have range ≥ 2.
+
+<Callout type="tip">
+  On a permutation, only subarrays of length exactly 2 can satisfy max - min = gcd. This is the key insight that turns an O(n²) problem into O(n).
+</Callout>
+
+**Step 3 — Linear scan**
+
+Just check every adjacent pair `(arr[i], arr[i+1])`:
+if max(a,b) - min(a,b) == gcd(a,b) → ans++
+
+## Code
+
+```java
+int n = fr.nextInt();
+int arr[] = new int[n];
+for (int i = 0; i < n; i++) {
+    arr[i] = fr.nextInt();
+}
+int ans = 0;
+for (int i = 0; i < n - 1; i++) {
+    int mx = Math.max(arr[i], arr[i + 1]);
+    int mn = Math.min(arr[i], arr[i + 1]);
+    if (mx - mn == gcd(arr[i], arr[i + 1])) ans++;
+}
+System.out.println(ans);
+```
+
+```java
+public static int gcd(int a, int b) {
+    while (b != 0) {
+        int temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+```
+
+<Complexity time="O(n)" space="O(n)" />
+
+## Why Length ≥ 3 Never Works
+
+Take any 3 distinct positive integers `a < b < c` from a permutation.
+- `max - min = c - a ≥ 2` (since they're distinct integers, c ≥ a+2)
+- `gcd(a,b,c)` divides all three distinct values, so it's at most `1` when one of them is `1`, or generally much smaller than `c - a`
+
+The gap is always too large. Only consecutive integers like `[k, k+1]` can satisfy `max - min = 1 = gcd(k, k+1)`.
+
+## Mistakes to Avoid
+
+- Checking all O(n²) subarrays — completely unnecessary given the permutation constraint
+- This solution does **not** work on general arrays — the permutation property is load-bearing
+- Forgetting that non-adjacent pairs of length 2 don't need to be checked — only consecutive ones form subarrays

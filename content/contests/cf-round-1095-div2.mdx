@@ -1,0 +1,58 @@
+---
+title: "Codeforces Round 1095 Div.2 — Post Mortem"
+platform: "codeforces"
+round: "Codeforces Round 1095 Div.2"
+rank: 0
+date: "2026-04-28"
+tags: ["greedy", "math", "gcd", "permutation"]
+excerpt: "Solved A and B. A needed careful case analysis around ones and the last element. B had a beautiful reduction once I used the permutation constraint."
+published: true
+problems:
+  - { id: "A", title: "Array Cost", solved: true, time: "18:00", slug: "2226A-array-cost" }
+  - { id: "B", title: "Good Subarrays", solved: true, time: "35:00", slug: "2226B-good-subarrays-permutation" }
+  - { id: "C", title: "Problem C", solved: false }
+  - { id: "D", title: "Problem D", solved: false }
+---
+
+## Overview
+
+Decent contest for me on A and B. Both problems had the same flavour —
+a constraint in the problem (ones behavior in products, permutation structure)
+that completely changes the solution once you notice it.
+
+## Problem A — Array Cost ✅ (~18 min)
+
+The key was noticing `x × y ≥ x + y` for `x, y > 1`. Once I had that,
+the greedy fell out naturally — ones always attach to the nearest non-one for free.
+
+The tricky part was the last element edge case. If `arr[n-1] == 1`, it
+has nothing to attach to so it must be counted separately.
+
+Full writeup → [2226A Array Cost](/solutions/2226A-array-cost)
+
+## Problem B — Good Subarrays ✅ (~35 min)
+
+Looked intimidating at first. My first instinct was to check all subarrays which
+would be O(n²) — too slow.
+
+The unlock was thinking about what a **permutation** actually guarantees. Since
+all values are distinct integers from 1 to n, GCD of any length-3+ subarray
+basically always collapses to 1, but max-min is at least 2. So the condition
+can only hold for length-2 subarrays. From there it's just a linear scan.
+
+<Callout type="info">
+  Both A and B this round had the same lesson — read the constraints carefully. The word "permutation" in B wasn't flavor text, it was the entire solution.
+</Callout>
+
+Full writeup → [2226B Good Subarrays](/solutions/2226B-good-subarrays-permutation)
+
+## What I'm Taking Away
+
+- When a problem says "permutation", immediately think about what distinctness + range 1..n gives you
+- For product vs sum problems, always check the `x × y vs x + y` inequality first
+- Edge cases at array boundaries (last element, first element) deserve explicit attention before submitting
+
+## What to Practice Before Next Contest
+
+- More greedy problems involving product vs sum tradeoffs
+- GCD properties on constrained arrays

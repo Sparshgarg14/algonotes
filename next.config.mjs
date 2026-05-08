@@ -6,9 +6,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   pageExtensions: ["ts", "tsx", "md", "mdx"],
-  turbopack: {
-    root: __dirname,
-  },
+
 };
 
 export default nextConfig;

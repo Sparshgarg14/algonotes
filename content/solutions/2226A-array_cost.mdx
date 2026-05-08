@@ -1,0 +1,96 @@
+---
+title: "2226A — Array Cost"
+platform: "codeforces"
+difficulty: "easy"
+tags: ["greedy", "math", "arrays"]
+date: "2026-04-28"
+language: "java"
+timeComplexity: "O(n)"
+spaceComplexity: "O(n)"
+excerpt: "Ones in the middle are always free to absorb into the next element. Only a trailing 1 costs extra. Final answer is sum of all elements greater than 1, plus 1 if the last element is 1."
+published: true
+---
+
+## Problem
+
+Given an array, repeatedly pick any non-decreasing subsequence and pay the **product** of its elements as cost. Minimize total cost to empty the array.
+
+## Key Insight
+
+For any two integers `x, y > 1`:
+x × y  ≥  x + y
+
+So multiplying two elements together always costs **at least as much** as paying for them separately. This means you should **never** group two elements both greater than 1 together.
+
+<Callout type="tip">
+  The optimal strategy is to always form subsequences of the shape [1, 1, ..., x] — a bunch of ones followed by exactly one large element. The cost of such a group is just x.
+</Callout>
+
+This means every `1` in the array (except possibly the last element) can attach itself to the next larger element for free — contributing nothing to the product.
+
+## Three Cases
+
+**Case 1 — Strictly decreasing array**
+
+No two adjacent elements satisfy `a[i] ≤ a[i+1]`, so no non-trivial grouping is possible. Every element must be picked alone. Answer = sum of all elements.
+
+**Case 2 — All ones**
+
+Pick the entire array at once. Product of all ones = 1. Answer = 1.
+
+**Case 3 — Mixed array**
+
+- Every `1` from index `0` to `n-2` attaches to whatever comes after it — costs nothing extra
+- A `1` at the **last index** cannot attach to anything (no valid element follows), so it adds `+1`
+answer = (sum - count_of_ones) % 676767677
+if arr[n-1] == 1: answer += 1
+
+## Code
+
+```java
+int n = fr.nextInt();
+int arr[] = new int[n];
+long sum = 0;
+long modulo = 676767677;
+long cntones = 0;
+
+for (int i = 0; i < n; i++) {
+    arr[i] = fr.nextInt();
+    sum += arr[i];
+    if (arr[i] == 1) cntones++;
+}
+
+// Case 1: strictly decreasing
+boolean check = false;
+for (int i = 0; i < n - 1; i++) {
+    if (arr[i] <= arr[i + 1]) check = true;
+}
+if (!check) {
+    System.out.println(sum % modulo);
+    continue;
+}
+
+// Case 2: all ones
+if (cntones == n) {
+    System.out.println(1);
+    continue;
+}
+
+// Case 3: ones in middle are free
+if (arr[n - 1] == 1) sum += 1;
+System.out.println((sum - cntones) % modulo);
+```
+
+<Complexity time="O(n)" space="O(n)" />
+
+## Why Subtracting Ones Works
+
+When you attach a `1` to element `x`, the group `[1, x]` costs `1 × x = x`.
+Without the `1`, you'd pay `1 + x` for picking them separately.
+Attaching saves exactly `1` per middle-one — which is exactly what `sum - cntones` achieves.
+
+## Mistakes to Avoid
+
+- Not handling the strictly decreasing case separately — formula breaks there
+- Forgetting the last-element-is-one edge case
+- Using `1e9+7` as modulo — this problem uses `676767677`
