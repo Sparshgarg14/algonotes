@@ -1,0 +1,41 @@
+---
+title: "Palindromes with Two Zeros — Finding the Optimal Center"
+category: "String"
+level: "intermediate"
+tags: ["palindrome", "two-pointers", "greedy", "string"]
+date: "2026-04-28"
+excerpt: "A beautiful center-finding trick — two zeros in an array define at most 3 candidate palindrome centers. Check all three, take the best."
+published: true
+---
+
+## Problem
+
+You are given an array of length `2n` containing exactly two zeros and numbers from `0` to `n`. Find the longest palindromic subarray that contains both zeros, and return the **smallest missing positive integer** from it.
+
+## The Core Insight
+
+The key observation is about **where the center of any palindrome containing both zeros must lie**.
+
+Call the positions of the two zeros `x` and `y` (where `x < y`).
+
+For any palindrome containing both zeros, the zeros must be **symmetrically placed** about the center. This gives us exactly **3 candidate centers** to check:
+
+<Callout type="info">
+  You don't need to check all possible centers — the two zeros themselves constrain where the palindrome center must be. Only 3 positions are ever worth checking.
+</Callout>
+
+### The 3 Candidate Centers
+
+**Center 1 — Zero x is the center**
+
+The palindrome is centered at position `x` itself (odd-length palindrome expanding from `x`).
+
+**Center 2 — Zero y is the center**
+
+The palindrome is centered at position `y` itself.
+
+**Center 3 — The midpoint between x and y**
+
+If both zeros have the same parity of index (both even or both odd), their midpoint is a single integer — one center exists between them.
+
+If they have opposite parity, the midpoint falls between two indices — meaning a **two-character center** (even-length palindrome). The two centers are `(x+y)/2` and `(x+y+1)/2` — which are always adjacent to each other.
