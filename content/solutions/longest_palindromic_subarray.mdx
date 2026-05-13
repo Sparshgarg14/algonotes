@@ -1,0 +1,110 @@
+---
+title: "5 — Longest Palindromic Substring"
+platform: "leetcode"
+difficulty: "medium"
+tags: ["two-pointers", "string", "palindrome"]
+date: "2026-05-13"
+language: "java"
+timeComplexity: "O(n²)"
+spaceComplexity: "O(1)"
+excerpt: "Expand around every possible center. Odd-length palindromes have 1 center, even-length have 2 centers. Track the maximum length palindrome found."
+published: true
+---
+
+## Problem
+
+Given a string `s`, return the **longest palindromic substring** in `s`.
+
+## Key Insight
+
+<Callout type="info">
+  Always think like this: when it is **odd length palindrome** then it's easy (e.g., `010`), but when it's **even length** (e.g., `0110`), then there are **2 centers**.
+</Callout>
+
+For the two centers in even-length palindromes:
+- Left center: `(2*i+1)/2` = `i`
+- Right center: `2*(i+1)/2` = `i+1`
+
+This means for each position `i`, we need to check **two cases**:
+1. **Odd-length**: Center at `(i, i)` — single character center
+2. **Even-length**: Center at `(i, i+1)` — two character center
+
+## Approach
+
+For each index in the string:
+1. Expand outward from center `(i, i)` for odd-length palindromes
+2. Expand outward from center `(i, i+1)` for even-length palindromes
+3. Keep track of the longest palindrome found
+
+The expansion works by:
+- Starting with `left` and `right` pointers at the center(s)
+- While characters match and we're within bounds, expand outward
+- Track the maximum length substring
+
+## Code
+
+```java
+class Solution {
+    public String longestPalindrome(String s) {
+        String ans = "";
+
+        for (int i = 0; i < s.length(); i++) {
+            // Odd length palindrome (single center)
+            String res1 = palindromelength(i, i, s);
+            
+            // Even length palindrome (two centers)
+            String res2 = palindromelength((2*i+1)/2, (i+1), s);
+            
+            // Update answer with longer palindrome
+            if (res1.length() > res2.length()) {
+                if (res1.length() > ans.length()) {
+                    ans = res1;
+                }
+            } else {
+                if (res2.length() > ans.length()) {
+                    ans = res2;
+                }
+            }
+        }
+        return ans;
+    }
+    
+    public String palindromelength(int left, int right, String s) {
+        int n = s.length();
+        int max = Integer.MIN_VALUE;
+        String check = "";
+        
+        while (left >= 0 && right < n && s.charAt(left) == s.charAt(right)) {
+            if (right - left + 1 > max) {
+                check = s.substring(left, right + 1);
+                max = Math.max(max, right - left + 1);
+            }
+            left--;
+            right++;
+        }
+        return check;
+    }
+}
+<Complexity time="O(n²)" space="O(1)" />
+
+Why This Works
+Odd-length example ("010"):
+Center at index 1 (character '1')
+Expand: left=1, right=1 → left=0, right=2
+Result: "010"
+Even-length example ("0110"):
+Two centers at indices 1 and 2 (both '1')
+Expand: left=1, right=2 → left=0, right=3
+Result: "0110"
+Time Complexity Analysis
+We iterate through n positions
+For each position, we expand at most O(n) characters in both directions
+Total: O(n²)
+Space Complexity Analysis
+Only storing the result string and pointers
+O(1) extra space (not counting output)
+Mistakes to Avoid
+Forgetting even-length palindromes: Only checking (i,i) misses palindromes like "abba"
+Off-by-one errors: Be careful with substring(left, right+1) — the end index is exclusive
+Not checking bounds: Always verify left >= 0 and right < n before accessing characters
+Integer division: (2*i+1)/2 simplifies to i with integer division, giving us the left center
